@@ -1,0 +1,4 @@
+https://www.circuitstate.com/tutorials/debugging-esp32-arduino-esp-idf-projects-using-esp-prog-and-platformio/#:~:text=In%20this%20post%2C%20we%20will%20show%20you%20how,ESP32%20DevKit%20V1%20board%20as%20the%20target%20board.
+https://community.platformio.org/t/esp32-pio-unified-debugger/4541/20
+https://www.manualdomaker.com/article/como-depurar-com-o-esp-prog/
+https://www.youtube.com/watch?v=UrW6VGjBV8g

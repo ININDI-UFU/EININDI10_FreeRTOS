@@ -1,0 +1,19 @@
+<circuit version="2.0.0-" rev="260501" stepSize="100000" stepsPS="1000000" NLsteps="100000" reaStep="1000000" animate="0" anicurr="0" ansi="0" width="3200" height="2400" >
+
+<item itemtype="Subcircuit" CircId="devkitC-4" mainComp="false" Show_id="true" Show_Val="false" Pos="44,28" rotation="0" hflip="1" vflip="1" label="devkitC-4" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0">
+<mainCompProps MainCompId="Esp32-2" Program="merged.bin" />
+</item>
+
+<item itemtype="SerialPort" CircId="SerialPort-5" mainComp="false" Show_id="false" Show_Val="false" Pos="232,92" rotation="0" hflip="1" vflip="1" label="SerialPort-5" idLabPos="-20,-32" labelrot="0" valLabPos="-16,20" valLabRot="0" Auto="false" Port="\\.\CNCB0" Baudrate="115200 _Bd" DataBits="8 _bits" StopBits="1 _bits" SerialMon="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-6" mainComp="false" Show_id="false" Show_Val="false" Pos="188,100" rotation="0" hflip="1" vflip="1" label="Tunnel-6" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="TX" IsBus="false" />
+
+<item itemtype="Tunnel" CircId="Tunnel-7" mainComp="false" Show_id="false" Show_Val="false" Pos="140,76" rotation="180" hflip="1" vflip="1" label="Tunnel-7" idLabPos="-16,-24" labelrot="0" valLabPos="-16,20" valLabRot="0" Name="TX" IsBus="false" />
+
+<item itemtype="Connector" uid="Connector-2" startpinid="devkitC-4-RX" endpinid="SerialPort-5-pin0" pointList="132,84,192,84" />
+
+<item itemtype="Connector" uid="Connector-3" startpinid="Tunnel-6-pin" endpinid="SerialPort-5-pin1" pointList="188,100,192,100" />
+
+<item itemtype="Connector" uid="Connector-4" startpinid="Tunnel-7-pin" endpinid="devkitC-4-TX" pointList="140,76,132,76" />
+
+</circuit>
