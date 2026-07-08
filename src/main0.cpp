@@ -8,6 +8,7 @@
 
 #include "services/wserial.h"
 #include "dsps_biquad.h"
+#include "dsps_tone_gen.h"
 
 // Aquisicao real no GPIO34 @ 100 Hz, dividida em tasks FreeRTOS distintas:
 //   [TaskSampling] -> fila rawQueue -> [TaskFilter] -> fila filteredQueue -> [TaskPublish]
@@ -60,12 +61,31 @@ static float lowpass_stage2_state[2] = {0.0f, 0.0f};
 // Mistura 10 Hz (deve passar) + 40 Hz (deve ser atenuado) + 110 Hz (alias de
 // 10 Hz ao amostrar a 100 Hz), centrada em ADC_REF_VOLTS/2 pra imitar a faixa
 // do ADC real.
+//
+// Gerada via dsps_tone_gen_f32 (mesma lib do filtro) numa tabela de 1 periodo
+// fundamental (100 ms = mmc de 10/40/110 Hz a 100 Hz = 10 amostras), calculada
+// uma unica vez no boot. Evita chamar sinf() em runtime com o tempo desde o
+// boot crescendo (esp_timer_get_time() em segundos): apos alguns minutos de
+// uptime "2*PI*110*t" chega a dezenas de milhares de radianos, faixa em que o
+// sinf() perde precisao e estraga a amplitude do sinal sintetico.
+constexpr int SYNTH_TABLE_LEN = 10;
+static float synthTable[SYNTH_TABLE_LEN];
+
+void synthTableInit() {
+    float tone10[SYNTH_TABLE_LEN];
+    float tone40[SYNTH_TABLE_LEN];
+    float tone110[SYNTH_TABLE_LEN];
+    dsps_tone_gen_f32(tone10, SYNTH_TABLE_LEN, 0.5f, 10.0f / SAMPLE_RATE_HZ, 0.0f);
+    dsps_tone_gen_f32(tone40, SYNTH_TABLE_LEN, 0.3f, 40.0f / SAMPLE_RATE_HZ, 0.0f);
+    dsps_tone_gen_f32(tone110, SYNTH_TABLE_LEN, 0.2f, 110.0f / SAMPLE_RATE_HZ, 0.0f);
+    for (int i = 0; i < SYNTH_TABLE_LEN; i++) {
+        synthTable[i] = tone10[i] + tone40[i] + tone110[i];
+    }
+}
+
 float readAdcVolts() {
-    const float t = static_cast<float>(esp_timer_get_time()) * 1e-6f;
-    const float mix = 0.5f * sinf(2.0f * PI * 10.0f * t)
-                     + 0.3f * sinf(2.0f * PI * 40.0f * t)
-                     + 0.2f * sinf(2.0f * PI * 110.0f * t);
-    return (ADC_REF_VOLTS / 2.0f) + mix;
+    static uint32_t idx = 0;
+    return (ADC_REF_VOLTS / 2.0f) + synthTable[idx++ % SYNTH_TABLE_LEN];
 }
 #else
 float readAdcVolts() {
@@ -305,7 +325,14 @@ void taskStats(void *pvParameters) {
 void setup() {
     wserial.begin(SERIAL_BAUD);
     delay(1000);
-#if !USE_SYNTHETIC_ADC
+#if USE_SYNTHETIC_ADC
+    synthTableInit();
+    wserial.print("synthTable=");
+    for (int i = 0; i < SYNTH_TABLE_LEN; i++) {
+        wserial.print(synthTable[i]);
+        wserial.print(i < SYNTH_TABLE_LEN - 1 ? "," : "\n");
+    }
+#else
     analogReadResolution(12);
     analogSetAttenuation(ADC_11db);
     pinMode(ADC_PIN, INPUT);
@@ -332,3 +359,4 @@ void loop() {
     wserial.update();
     vTaskDelay(pdMS_TO_TICKS(10));
 }
+// touch
