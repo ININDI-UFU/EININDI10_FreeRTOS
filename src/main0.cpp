@@ -8,7 +8,6 @@
 
 #include "services/wserial.h"
 #include "dsps_biquad.h"
-#include "dsps_tone_gen.h"
 
 // Aquisicao real no GPIO34 @ 100 Hz, dividida em tasks FreeRTOS distintas:
 //   [TaskSampling] -> fila rawQueue -> [TaskFilter] -> fila filteredQueue -> [TaskPublish]
@@ -62,24 +61,23 @@ static float lowpass_stage2_state[2] = {0.0f, 0.0f};
 // 10 Hz ao amostrar a 100 Hz), centrada em ADC_REF_VOLTS/2 pra imitar a faixa
 // do ADC real.
 //
-// Gerada via dsps_tone_gen_f32 (mesma lib do filtro) numa tabela de 1 periodo
-// fundamental (100 ms = mmc de 10/40/110 Hz a 100 Hz = 10 amostras), calculada
-// uma unica vez no boot. Evita chamar sinf() em runtime com o tempo desde o
-// boot crescendo (esp_timer_get_time() em segundos): apos alguns minutos de
-// uptime "2*PI*110*t" chega a dezenas de milhares de radianos, faixa em que o
-// sinf() perde precisao e estraga a amplitude do sinal sintetico.
+// Tabela de 1 periodo fundamental (100 ms = mmc de 10/40/110 Hz a 100 Hz =
+// 10 amostras), calculada uma unica vez no boot com indice i pequeno
+// (0..9) -- dsps_tone_gen_f32 foi tentado aqui, mas sua faixa valida de
+// frequencia e' -1..1 (normalizado por fs) e 110 Hz corresponde a 1.1, fora
+// da faixa: a amplitude gerada saiu incorreta. Evitamos tambem sinf(2*PI*f*t)
+// com t = tempo desde o boot, pois apos alguns minutos de uptime o argumento
+// chega a dezenas de milhares de radianos, faixa em que sinf() perde precisao.
+// Usando i (0..9) direto no lugar de t o argumento nunca cresce.
 constexpr int SYNTH_TABLE_LEN = 10;
 static float synthTable[SYNTH_TABLE_LEN];
 
 void synthTableInit() {
-    float tone10[SYNTH_TABLE_LEN];
-    float tone40[SYNTH_TABLE_LEN];
-    float tone110[SYNTH_TABLE_LEN];
-    dsps_tone_gen_f32(tone10, SYNTH_TABLE_LEN, 0.5f, 10.0f / SAMPLE_RATE_HZ, 0.0f);
-    dsps_tone_gen_f32(tone40, SYNTH_TABLE_LEN, 0.3f, 40.0f / SAMPLE_RATE_HZ, 0.0f);
-    dsps_tone_gen_f32(tone110, SYNTH_TABLE_LEN, 0.2f, 110.0f / SAMPLE_RATE_HZ, 0.0f);
     for (int i = 0; i < SYNTH_TABLE_LEN; i++) {
-        synthTable[i] = tone10[i] + tone40[i] + tone110[i];
+        const float ph = 2.0f * PI * static_cast<float>(i) / SAMPLE_RATE_HZ;
+        synthTable[i] = 0.5f * sinf(ph * 10.0f)
+                       + 0.3f * sinf(ph * 40.0f)
+                       + 0.2f * sinf(ph * 110.0f);
     }
 }
 
