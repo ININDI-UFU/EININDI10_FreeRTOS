@@ -23,10 +23,11 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "G:/Meu Drive/Josue/02 AulasUFU/01 Aulas_ININD1/Pratica/EININDI10_FreeRTOS/.pio/build/esp32dev/firmware.elf",
+            "executable": "C:/Prof_Josue/0II1/EININDI10_FreeRTOS/.pio/build/esp32dev/firmware.elf",
             "projectEnvName": "esp32dev",
-            "toolchainBinDir": "C:/Users/josuemorais/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "toolchainBinDir": "C:/config/platformio/packages/toolchain-xtensa-esp-elf/bin",
             "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "C:/config/platformio/platforms/espressif32@src-88f34194123b4b05ff6ef6b8e68c7f60/misc/svd/esp32.svd",
             "preLaunchTask": {
                 "type": "PlatformIO",
                 "task": "Pre-Debug"
@@ -36,19 +37,21 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "G:/Meu Drive/Josue/02 AulasUFU/01 Aulas_ININD1/Pratica/EININDI10_FreeRTOS/.pio/build/esp32dev/firmware.elf",
+            "executable": "C:/Prof_Josue/0II1/EININDI10_FreeRTOS/.pio/build/esp32dev/firmware.elf",
             "projectEnvName": "esp32dev",
-            "toolchainBinDir": "C:/Users/josuemorais/.platformio/packages/toolchain-xtensa-esp32/bin",
-            "internalConsoleOptions": "openOnSessionStart"
+            "toolchainBinDir": "C:/config/platformio/packages/toolchain-xtensa-esp-elf/bin",
+            "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "C:/config/platformio/platforms/espressif32@src-88f34194123b4b05ff6ef6b8e68c7f60/misc/svd/esp32.svd"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "G:/Meu Drive/Josue/02 AulasUFU/01 Aulas_ININD1/Pratica/EININDI10_FreeRTOS/.pio/build/esp32dev/firmware.elf",
+            "executable": "C:/Prof_Josue/0II1/EININDI10_FreeRTOS/.pio/build/esp32dev/firmware.elf",
             "projectEnvName": "esp32dev",
-            "toolchainBinDir": "C:/Users/josuemorais/.platformio/packages/toolchain-xtensa-esp32/bin",
+            "toolchainBinDir": "C:/config/platformio/packages/toolchain-xtensa-esp-elf/bin",
             "internalConsoleOptions": "openOnSessionStart",
+            "svdPath": "C:/config/platformio/platforms/espressif32@src-88f34194123b4b05ff6ef6b8e68c7f60/misc/svd/esp32.svd",
             "loadMode": "manual"
         }
     ],
