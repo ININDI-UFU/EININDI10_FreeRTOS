@@ -25,6 +25,12 @@ constexpr float ADC_REF_VOLTS = 3.3f;
 
 constexpr uint32_t STATS_PERIOD_MS = 2000;
 
+// Liga um sinal sintetico (10 Hz + 40 Hz + 110 Hz) no lugar do analogRead().
+// Usado para validar o pipeline FreeRTOS/filtro no SimulIDE, cujo modelo de
+// ADC do ESP32 nao repassa a tensao do circuito pro periferico simulado
+// (analogRead sempre retorna 0 la, independente do que esta ligado no pino).
+#define USE_SYNTHETIC_ADC 1
+
 // ---------------------------------------------------------------------------
 // Filtro: Butterworth passa-baixa de 4a ordem, fs=100 Hz, fc=20 Hz.
 // Esta frequencia de corte deixa 10 Hz passar bem e atenua fortemente 40 Hz.
@@ -50,10 +56,23 @@ static float lowpass_stage2_coeffs[5] = {
 static float lowpass_stage1_state[2] = {0.0f, 0.0f};
 static float lowpass_stage2_state[2] = {0.0f, 0.0f};
 
+#if USE_SYNTHETIC_ADC
+// Mistura 10 Hz (deve passar) + 40 Hz (deve ser atenuado) + 110 Hz (alias de
+// 10 Hz ao amostrar a 100 Hz), centrada em ADC_REF_VOLTS/2 pra imitar a faixa
+// do ADC real.
+float readAdcVolts() {
+    const float t = static_cast<float>(esp_timer_get_time()) * 1e-6f;
+    const float mix = 0.5f * sinf(2.0f * PI * 10.0f * t)
+                     + 0.3f * sinf(2.0f * PI * 40.0f * t)
+                     + 0.2f * sinf(2.0f * PI * 110.0f * t);
+    return (ADC_REF_VOLTS / 2.0f) + mix;
+}
+#else
 float readAdcVolts() {
     const uint16_t counts = analogRead(ADC_PIN);
     return (static_cast<float>(counts) * ADC_REF_VOLTS) / ADC_MAX_COUNTS;
 }
+#endif
 
 float filterLowpassCascade(float sample) {
     float stage1 = 0.0f;
@@ -286,9 +305,11 @@ void taskStats(void *pvParameters) {
 void setup() {
     wserial.begin(SERIAL_BAUD);
     delay(1000);
+#if !USE_SYNTHETIC_ADC
     analogReadResolution(12);
-    analogSetPinAttenuation(ADC_PIN, ADC_11db);
+    analogSetAttenuation(ADC_11db);
     pinMode(ADC_PIN, INPUT);
+#endif
     wserial.println("GPIO34 @ 100 Hz: sampling/filter/publish em tasks FreeRTOS distintas");
 
     serialMutex = xSemaphoreCreateMutex();
