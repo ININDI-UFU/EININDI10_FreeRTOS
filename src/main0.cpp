@@ -325,11 +325,6 @@ void setup() {
     delay(1000);
 #if USE_SYNTHETIC_ADC
     synthTableInit();
-    wserial.print("synthTable=");
-    for (int i = 0; i < SYNTH_TABLE_LEN; i++) {
-        wserial.print(synthTable[i]);
-        wserial.print(i < SYNTH_TABLE_LEN - 1 ? "," : "\n");
-    }
 #else
     analogReadResolution(12);
     analogSetAttenuation(ADC_11db);
