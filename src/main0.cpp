@@ -75,9 +75,11 @@ static float synthTable[SYNTH_TABLE_LEN];
 void synthTableInit() {
     for (int i = 0; i < SYNTH_TABLE_LEN; i++) {
         const float ph = 2.0f * PI * static_cast<float>(i) / SAMPLE_RATE_HZ;
+        // synthTable[i] = 0.5f * sinf(ph * 10.0f)
+        //                + 0.3f * sinf(ph * 40.0f)
+        //                + 0.2f * sinf(ph * 110.0f);
         synthTable[i] = 0.5f * sinf(ph * 10.0f)
-                       + 0.3f * sinf(ph * 40.0f)
-                       + 0.2f * sinf(ph * 110.0f);
+                       + 0.3f * sinf(ph * 40.0f);                      
     }
 }
 

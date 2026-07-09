@@ -1,14 +1,10 @@
 <circuit version="2.0.0-" rev="260501" stepSize="100000" stepsPS="1000000" NLsteps="100000" reaStep="1000000" animate="0" anicurr="0" ansi="0" width="3200" height="2400" >
 
 <item itemtype="Subcircuit" CircId="devkitC-155" mainComp="false" Show_id="true" Show_Val="false" Pos="-220,-196" rotation="0" hflip="1" vflip="1" label="devkitC-155" idLabPos="0,-20" labelrot="0" valLabPos="-16,20" valLabRot="0">
-<mainCompProps MainCompId="Esp32-2" Program="../../../../../Prof_Josue/0II1/EININDI10_FreeRTOS/simulIDE/merged.bin" />
+<mainCompProps MainCompId="Esp32-2" Program="merged.bin" />
 </item>
 
-<item itemtype="WaveGen" CircId="WaveGen-158" mainComp="false" Show_id="false" Show_Val="true" Pos="-256,-140" rotation="0" hflip="1" vflip="1" label="WaveGen-158" idLabPos="-64,-24" labelrot="0" valLabPos="-16,8" valLabRot="0" Out="true" Running="true" Wave_Type="Sine" Freq="40 Hz" Phase="0 _º" Steps="100" Duty="50 _%" Always_On="false" Bipolar="false" Floating="false" Semi_Ampli="0.5 V" Mid_Volt="0 V" />
-
 <item itemtype="SerialPort" CircId="SerialPort-38" mainComp="false" Show_id="false" Show_Val="false" Pos="-44,-132" rotation="0" hflip="1" vflip="1" label="SerialPort-101" idLabPos="-34,-20" labelrot="0" valLabPos="0,0" valLabRot="0" Auto="true" Port="\\.\CNCB0" Baudrate="115200 _Bd" DataBits="8 _bits" StopBits="1 _bits" SerialMon="false" />
-
-<item itemtype="Connector" uid="Connector-180" startpinid="devkitC-155-G34" endpinid="WaveGen-158-outnod" pointList="-220,-140,-240,-140" />
 
 <item itemtype="Connector" uid="Connector-162" startpinid="devkitC-155-TX" endpinid="SerialPort-38-pin1" pointList="-132,-148,-112,-148,-112,-124,-84,-124" />
 
